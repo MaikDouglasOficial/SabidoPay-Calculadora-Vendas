@@ -1,0 +1,22 @@
+{
+    "extends": "expo/tsconfig.base",
+    "compilerOptions": {
+      "strict": true,
+      "moduleResolution": "node16",  // Mantenha o moduleResolution como "node16"
+      "module": "Node16",  // CORREÇÃO: Defina o module como Node16
+      "esModuleInterop": true,
+      "allowSyntheticDefaultImports": true,
+      "skipLibCheck": true,
+      "allowImportingTsExtensions": true,  // Permite importar arquivos .ts e .tsx sem extensão
+      "paths": {
+        "@/*": [
+          "./*"
+        ]
+      }
+    },
+    "include": [
+      "**/*.ts",
+      "**/*.tsx"
+    ]
+  }
+  
