@@ -2,10 +2,15 @@
   "expo": {
     "name": "calculadora-juros",
     "slug": "calculadora-juros",
-    "platforms": ["ios", "android"],
+    "platforms": [
+      "ios",
+      "android"
+    ],
     "version": "1.0.0",
     "sdkVersion": "52.0.0",
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "bundleIdentifier": "com.expo.calculadoraJuros",
       "buildNumber": "1.0.0"
@@ -14,6 +19,11 @@
       "package": "com.expo.calculadoraJuros",
       "versionCode": 1
     },
-    "newArchEnabled": true
+    "newArchEnabled": true,
+    "extra": {
+      "eas": {
+        "projectId": "1513cb59-982f-4982-8490-df7fc1f45164"
+      }
+    }
   }
 }
