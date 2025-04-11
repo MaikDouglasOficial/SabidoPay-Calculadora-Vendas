@@ -106,10 +106,7 @@ const JurosCalculatorScreen = () => {
       <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
         <View style={styles.calculatorContainer}>
           <Text style={styles.calculatorTitle}>SabidoPay 1.0 - Nosso Lar</Text>
-          <View style={styles.calculatorDisplayContainer}>
-            <Text style={styles.calculatorPreviousValue}>{calcPreviousValue} {calcOperator}</Text>
-            <Text style={styles.calculatorDisplay} numberOfLines={1} ellipsizeMode="head">{calcDisplay}</Text>
-          </View>
+          <View style={styles.calculatorDisplayContainer}><Text style={styles.calculatorDisplay} numberOfLines={1} ellipsizeMode="head">{calcDisplay}</Text></View>
           <View style={styles.calculatorRow}>
             <TouchableOpacity style={styles.calcButtonClear} onPress={clearCalculator}><Text style={styles.calcButtonClearText}>C</Text></TouchableOpacity>
             <TouchableOpacity style={[styles.calcButtonTable, selectedTabela === 'c' ? styles.calcButtonTableActive : styles.calcButtonTableInactive]} onPress={() => handleSelecionarTabela('c')}><Text style={styles.calcButtonTableText}>T. Cheia</Text></TouchableOpacity>
@@ -188,71 +185,18 @@ const styles = StyleSheet.create({
   tableCell: { width: '33%', textAlign: 'center', fontSize: 14, color: '#333' },
   calculatorContainer: { marginBottom: 20, backgroundColor: '#ECEFF1', borderRadius: 6, padding: 18, elevation: 3, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.2, shadowRadius: 1.41 },
   calculatorTitle: { fontSize: 19, fontWeight: 'bold', color: '#37474F', marginBottom: 12, textAlign: 'center' },
-  calculatorDisplayContainer: { backgroundColor: '#CFD8DC', borderRadius: 6, paddingVertical: 14, paddingHorizontal: 15, marginBottom: 18, flexDirection: 'column', justifyContent: 'flex-end', alignItems: 'flex-end' },
-  calculatorPreviousValue: { fontSize: 16, color: '#263238', textAlign: 'right', fontWeight: '300' },
+  calculatorDisplayContainer: { backgroundColor: '#CFD8DC', borderRadius: 6, paddingVertical: 14, paddingHorizontal: 15, marginBottom: 18, flexDirection: 'row', justifyContent: 'flex-end', alignItems: 'center' },
   calculatorDisplay: { fontSize: 38, color: '#263238', textAlign: 'right', fontWeight: '500', flexShrink: 1 },
-  calculatorRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-around', 
-    marginBottom: 14,
-    alignItems: 'center',
-  },
-  calcButton: {
-    flex: 1, 
-    aspectRatio: 1,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 2,
-    backgroundColor: '#B0BEC5',
-    marginHorizontal: 5, 
-  },
+  calculatorRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 14, alignItems: 'center' },
+  calcButton: { width: '23%', aspectRatio: 1, borderRadius: 5, alignItems: 'center', justifyContent: 'center', elevation: 2, backgroundColor: '#B0BEC5' },
   calcButtonText: { fontSize: 26, fontWeight: 'bold', color: '#37474F' },
-  calcButtonOp: {
-    flex: 1, 
-    aspectRatio: 1,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 2,
-    backgroundColor: '#78909C',
-    marginHorizontal: 5, 
-  },
+  calcButtonOp: { width: '23%', aspectRatio: 1, borderRadius: 5, alignItems: 'center', justifyContent: 'center', elevation: 2, backgroundColor: '#78909C' },
   calcButtonOpText: { fontSize: 26, fontWeight: 'bold', color: '#FFFFFF' },
-  calcButtonClear: {
-    flex: 1, // 
-    aspectRatio: 1,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 2,
-    backgroundColor: '#EF5350',
-    marginHorizontal: 5, 
-  },
+  calcButtonClear: { width: '23%', aspectRatio: 1, borderRadius: 5, alignItems: 'center', justifyContent: 'center', elevation: 2, backgroundColor: '#EF5350' },
   calcButtonClearText: { fontSize: 26, fontWeight: 'bold', color: '#FFFFFF' },
-  calcButtonEquals: {
-    flex: 1, 
-    aspectRatio: 1,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 2,
-    backgroundColor: '#42A5F5',
-    marginHorizontal: 5, 
-  },
+  calcButtonEquals: { width: '23%', aspectRatio: 1, borderRadius: 5, alignItems: 'center', justifyContent: 'center', elevation: 2, backgroundColor: '#42A5F5' },
   calcButtonEqualsText: { fontSize: 26, fontWeight: 'bold', color: '#FFFFFF' },
-  calcButtonTable: {
-    flex: 1, 
-    aspectRatio: 1,
-    borderRadius: 5,
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 2,
-    backgroundColor: '#90A4AE',
-    borderWidth: 2,
-    borderColor: 'transparent',
-    marginHorizontal: 5, 
-  },
+  calcButtonTable: { width: '23%', aspectRatio: 1, borderRadius: 5, alignItems: 'center', justifyContent: 'center', elevation: 2, backgroundColor: '#90A4AE', borderWidth: 2, borderColor: 'transparent' },
   calcButtonTableActive: { borderColor: '#E74C3C' },
   calcButtonTableInactive: { borderColor: 'transparent' },
   calcButtonTableText: { fontSize: 13, fontWeight: 'bold', color: '#FFFFFF', textAlign: 'center' },
