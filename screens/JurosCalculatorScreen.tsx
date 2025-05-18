@@ -789,13 +789,13 @@ const JurosCalculatorScreen = () => {
                                     <View style={styles.tableHeader}>
                                         {temEntrada ? (
                                             <>
-                                                <Text style={[styles.tableHeaderCell, { width: 200 }]}>Plano</Text>
-                                                <Text style={[styles.tableHeaderCell, { width: 150 }]}>Valor</Text>
+                                                <Text style={[styles.tableHeaderCell, { width: 200 }]}>Entrada</Text>
+                                                <Text style={[styles.tableHeaderCell, { width: 150 }]}>Parcelas</Text>
                                             </>
                                         ) : (
                                             <>
-                                                <Text style={[styles.tableHeaderCell, { width: 100 }]}>Parcelas</Text>
-                                                <Text style={[styles.tableHeaderCell, { width: 150 }]}>Valor da Parcela</Text>
+                                                <Text style={[styles.tableHeaderCell, { width: 100 }]}> Quantidade Parcelas</Text>
+                                                <Text style={[styles.tableHeaderCell, { width: 150 }]}>Valor das Parcelas</Text>
                                             </>
                                         )}
                                     </View>
@@ -804,7 +804,7 @@ const JurosCalculatorScreen = () => {
                                             {temEntrada ? (
                                                 <>
                                                     <Text style={[styles.tableCell, { width: 200 }]}>
-                                                        Entrada: {item.entrada} + {item.parcelas}
+                                                        {item.entrada} + {item.parcelas}
                                                     </Text>
                                                     <Text style={[styles.tableCell, { width: 150 }]}>{item.valor}</Text>
                                                 </>
