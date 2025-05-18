@@ -18,6 +18,7 @@ import {
 } from 'react-native';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
+import * as FileSystem from 'expo-file-system';
 
 if (Platform.OS === 'android') {
     if (UIManager.setLayoutAnimationEnabledExperimental) {
@@ -74,9 +75,6 @@ const JurosCalculatorScreen = () => {
 
     const [showResults, setShowResults] = useState(false);
     const fadeAnim = useState(new Animated.Value(0))[0];
-
-    // Estado para armazenar o URL do PDF gerado (para web)
-    const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
     useEffect(() => {
         const cleanedDisplay = calcDisplay.replace(/[^0-9,.]/g, '');
@@ -315,6 +313,9 @@ const JurosCalculatorScreen = () => {
 
         // Valor formatado para exibição
         const valorFormatado = formatCurrency(parseFloat(valorOriginal));
+        
+        // Texto para compartilhamento via WhatsApp
+        const whatsappText = encodeURIComponent(`*Orçamento para ${cliente}*\n\n*Produto:* ${produtoServico}\n*Valor:* ${valorFormatado}\n*Data:* ${data}\n*Vendedor:* ${vendedor}\n\n*Opções de Parcelamento:*\n${resultados.map(item => `${item.parcelas} de ${item.valor}${temEntrada ? ` (Entrada: ${item.entrada})` : ''}`).join('\n')}\n\n_Gerado por SabidoPay Calculadora_`);
 
         return `
             <!DOCTYPE html>
@@ -409,10 +410,61 @@ const JurosCalculatorScreen = () => {
                     
                     .watermark {
                         text-align: center;
-                        margin-top: 50px;
+                        margin-top: 30px;
+                        margin-bottom: 30px;
                         font-size: 11px;
                         color: #aaa;
                         font-style: italic;
+                    }
+                    
+                    .share-buttons {
+                        display: flex;
+                        justify-content: center;
+                        margin-top: 30px;
+                        flex-wrap: wrap;
+                        gap: 15px;
+                    }
+                    
+                    .share-button {
+                        display: inline-block;
+                        padding: 12px 24px;
+                        border-radius: 50px;
+                        text-decoration: none;
+                        color: white;
+                        font-weight: bold;
+                        text-align: center;
+                        transition: all 0.3s ease;
+                        min-width: 180px;
+                    }
+                    
+                    .whatsapp {
+                        background-color: #25D366;
+                    }
+                    
+                    .whatsapp:hover {
+                        background-color: #128C7E;
+                    }
+                    
+                    .email {
+                        background-color: #D44638;
+                    }
+                    
+                    .email:hover {
+                        background-color: #B23121;
+                    }
+                    
+                    .print {
+                        background-color: #546E7A;
+                    }
+                    
+                    .print:hover {
+                        background-color: #37474F;
+                    }
+                    
+                    @media print {
+                        .share-buttons {
+                            display: none;
+                        }
                     }
                 </style>
             </head>
@@ -423,6 +475,7 @@ const JurosCalculatorScreen = () => {
                         <p><strong>Cliente:</strong> ${cliente || 'Não informado'}</p>
                         <p><strong>Data:</strong> ${data || 'Não informada'}</p>
                         <p><strong>Produto:</strong> ${produtoServico || 'Não informado'}</p>
+                        <p><strong>Valor:</strong> ${valorFormatado}</p>
                         <p><strong>Vendedor:</strong> ${vendedor || 'Não informado'}</p>
                     </div>
                     
@@ -434,31 +487,77 @@ const JurosCalculatorScreen = () => {
                     </table>
                     
                     <div class="footer">
+                        * Valores sujeitos à análise de crédito e aprovação.
+                    </div>
+                    
+                    <div class="share-buttons">
+                        <a href="https://wa.me/?text=${whatsappText}" target="_blank" class="share-button whatsapp">
+                            Compartilhar via WhatsApp
+                        </a>
+                        <a href="mailto:?subject=Orçamento: ${produtoServico}&body=${whatsappText}" class="share-button email">
+                            Enviar por E-mail
+                        </a>
+                        <a href="#" onclick="window.print(); return false;" class="share-button print">
+                            Imprimir / Salvar PDF
+                        </a>
+                    </div>
+                    
+                    <div class="watermark">
                         Gerado por SabidoPay Calculadora. Todos os direitos reservados.
                     </div>
                 </div>
+                
+                <script>
+                    // Verificar se o navegador suporta Web Share API
+                    if (navigator.share) {
+                        document.addEventListener('DOMContentLoaded', function() {
+                            // Adicionar botão de compartilhamento nativo
+                            var shareContainer = document.querySelector('.share-buttons');
+                            var shareButton = document.createElement('a');
+                            shareButton.href = '#';
+                            shareButton.className = 'share-button';
+                            shareButton.style.backgroundColor = '#1976D2';
+                            shareButton.textContent = 'Compartilhar (Nativo)';
+                            
+                            shareButton.addEventListener('click', function(e) {
+                                e.preventDefault();
+                                
+                                navigator.share({
+                                    title: 'Orçamento: ${produtoServico}',
+                                    text: '${whatsappText.replace(/\\n/g, ' ')}',
+                                    url: window.location.href
+                                })
+                                .catch(console.error);
+                            });
+                            
+                            shareContainer.appendChild(shareButton);
+                        });
+                    }
+                </script>
             </body>
             </html>
         `;
     };
 
-    // Função para criar um Blob e URL para download direto no navegador
-    const createPdfBlobUrl = (htmlContent: string) => {
-        if (Platform.OS === 'web') {
-            try {
-                // Criar um Blob com o conteúdo HTML
-                const blob = new Blob([htmlContent], { type: 'text/html' });
-                
-                // Criar uma URL para o Blob
-                const url = URL.createObjectURL(blob);
-                
-                return url;
-            } catch (error) {
-                console.error("Erro ao criar URL do Blob:", error);
-                return null;
-            }
-        }
-        return null;
+    // Função para compartilhar diretamente via WhatsApp
+    const compartilharViaWhatsApp = (resultados: ResultadoParcela[]) => {
+        const valorFormatado = formatCurrency(parseFloat(valorProduto));
+        
+        // Texto para compartilhamento via WhatsApp
+        const whatsappText = encodeURIComponent(`*Orçamento para ${nomeCliente}*\n\n*Produto:* ${nomeProdutoServico}\n*Valor:* ${valorFormatado}\n*Data:* ${dataOrcamento}\n*Vendedor:* ${nomeVendedor}\n\n*Opções de Parcelamento:*\n${resultados.map(item => `${item.parcelas} de ${item.valor}${temEntrada ? ` (Entrada: ${item.entrada})` : ''}`).join('\n')}\n\n_Gerado por SabidoPay Calculadora_`);
+        
+        const whatsappUrl = `https://wa.me/?text=${whatsappText}`;
+        
+        // Abrir WhatsApp
+        Linking.canOpenURL(whatsappUrl)
+            .then(supported => {
+                if (supported) {
+                    return Linking.openURL(whatsappUrl);
+                } else {
+                    Alert.alert("Erro", "WhatsApp não está instalado ou não pode ser aberto.");
+                }
+            })
+            .catch(err => Alert.alert("Erro", "Não foi possível abrir o WhatsApp."));
     };
 
     const gerarPdfECompartilhar = async () => {
@@ -495,37 +594,29 @@ const JurosCalculatorScreen = () => {
             return numA - numB;
         });
 
-        const htmlContent = gerarHtmlOrcamento(
-            nomeCliente,
-            nomeProdutoServico,
-            dataOrcamento,
-            resultadosFiltrados,
-            valorProduto,
-            valorEntrada,
-            temEntrada,
-            nomeVendedor
-        );
-
         try {
             setLoading(true);
             
-            // Abordagem específica para web
+            // Abordagem específica para web - compartilhar diretamente via WhatsApp
             if (Platform.OS === 'web') {
-                // Criar um link para download direto do HTML
-                const url = createPdfBlobUrl(htmlContent);
-                
-                if (url) {
-                    setPdfUrl(url);
-                    
-                    // Abrir em nova aba para visualização/download
-                    window.open(url, '_blank');
-                    
-                    setLoading(false);
-                    return;
-                }
+                // Compartilhar diretamente via WhatsApp
+                compartilharViaWhatsApp(resultadosFiltrados);
+                setLoading(false);
+                return;
             }
             
-            // Abordagem para dispositivos móveis (continua usando expo-print)
+            // Para dispositivos móveis, usar expo-print e expo-sharing
+            const htmlContent = gerarHtmlOrcamento(
+                nomeCliente,
+                nomeProdutoServico,
+                dataOrcamento,
+                resultadosFiltrados,
+                valorProduto,
+                valorEntrada,
+                temEntrada,
+                nomeVendedor
+            );
+            
             const { uri } = await Print.printToFileAsync({ 
                 html: htmlContent, 
                 base64: false 
@@ -764,7 +855,7 @@ const JurosCalculatorScreen = () => {
                         {loading ? (
                             <ActivityIndicator color="#ECEFF1" size="small" />
                         ) : (
-                            <Text style={styles.calcActionButtonText}>Compartilhar Orçamento</Text>
+                            <Text style={styles.calcActionButtonText}>Compartilhar via WhatsApp</Text>
                         )}
                     </Pressable>
                 </View>
@@ -888,7 +979,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         width: 40
     },
-    gerarPdfButton: { backgroundColor: '#00796B' },
+    gerarPdfButton: { backgroundColor: '#25D366' }, // Cor do WhatsApp
     calcButtonPressed: {
         opacity: 0.7,
         transform: [{ scale: 0.98 }],
