@@ -310,8 +310,8 @@ const JurosCalculatorScreen = () => {
                 const numParcelas = parseInt(item.parcelas.replace('x', ''));
                 return `
                     <tr>
-                        <td style="text-align: center; padding: 10px; border-bottom: 1px solid #eee;">Entrada de ${item.entrada} + ${numParcelas}x</td>
-                        <td style="text-align: center; padding: 10px; border-bottom: 1px solid #eee;">${item.valor}</td>
+                        <td style="text-align: center; padding: 10px; border-bottom: 1px solid #eee;">Entrada de ${item.entrada}</td>
+                        <td style="text-align: center; padding: 10px; border-bottom: 1px solid #eee;">${numParcelas}x ${item.valor}</td>
                     </tr>
                 `;
             } else {
@@ -327,7 +327,7 @@ const JurosCalculatorScreen = () => {
         const whatsappText = encodeURIComponent(`Orçamento para: ${cliente || 'Não informado'}\nProduto: ${produtoServico || 'Não informado'}\nData: ${data || 'Não informada'}\nVendedor: ${vendedor || 'Não informado'}\n\nOpções de Parcelamento:\n${resultados.map(item => {
             if (temEntrada) {
                 const numParcelas = parseInt(item.parcelas.replace('x', ''));
-                return `Entrada de ${item.entrada} + ${numParcelas}x de ${item.valor}`;
+                return `Entrada de ${item.entrada} | ${numParcelas}x de ${item.valor}`;
             } else {
                 return `${item.parcelas} de ${item.valor}`;
             }
@@ -556,7 +556,7 @@ const JurosCalculatorScreen = () => {
         const whatsappText = encodeURIComponent(`Orçamento para: ${nomeCliente || 'Não informado'}\nProduto: ${nomeProdutoServico || 'Não informado'}\nData: ${dataOrcamento || 'Não informada'}\nVendedor: ${nomeVendedor || 'Não informado'}\n\nOpções de Parcelamento:\n${resultados.map(item => {
             if (temEntrada) {
                 const numParcelas = parseInt(item.parcelas.replace('x', ''));
-                return `Entrada de ${item.entrada} + ${numParcelas}x de ${item.valor}`;
+                return `Entrada de ${item.entrada} | ${numParcelas}x de ${item.valor}`;
             } else {
                 return `${item.parcelas} de ${item.valor}`;
             }
@@ -785,12 +785,12 @@ const JurosCalculatorScreen = () => {
                                 <View style={styles.tableHeader}>
                                     {temEntrada ? (
                                         <>
-                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Plano</Text>
-                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Valor</Text>
+                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Entrada</Text>
+                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Valor da Parcela</Text>
                                         </>
                                     ) : (
                                         <>
-                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Parcelas</Text>
+                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Qtd. Parcelas</Text>
                                             <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Valor da Parcela</Text>
                                         </>
                                     )}
@@ -800,9 +800,11 @@ const JurosCalculatorScreen = () => {
                                         {temEntrada ? (
                                             <>
                                                 <Text style={[styles.tableCell, { flex: 1 }]}>
-                                                    Entrada de {item.entrada} + {item.parcelas}
+                                                    Entrada de {item.entrada}
                                                 </Text>
-                                                <Text style={[styles.tableCell, { flex: 1 }]}>{item.valor}</Text>
+                                                <Text style={[styles.tableCell, { flex: 1 }]}>
+                                                    {parseInt(item.parcelas.replace('x', ''))}x {item.valor}
+                                                </Text>
                                             </>
                                         ) : (
                                             <>
