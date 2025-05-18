@@ -35,6 +35,16 @@ const formatCurrency = (num: number): string => {
     }
 };
 
+const formatCurrencyRoundUp = (num: number): string => {
+    try {
+        const roundedUp = Math.ceil(num);
+        return roundedUp.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    } catch (e) {
+        console.error("Erro ao formatar moeda:", e);
+        return `R$ ${Math.ceil(num)}`;
+    }
+};
+
 const parcelasData: { [key: string]: { jrdia: number; pmeta: number } } = {
     '1+2X': { jrdia: 13, pmeta: 6.5 }, '1+3X': { jrdia: 17, pmeta: 8.5 },
     '1+4X': { jrdia: 21, pmeta: 10.5 }, '1+5X': { jrdia: 25, pmeta: 12.5 },
@@ -242,7 +252,7 @@ const JurosCalculatorScreen = () => {
                   resultadosCalculados.push({
                       entrada: formatCurrency(entradaNum),
                       parcelas: `1x`,
-                      valor: formatCurrency(0)
+                      valor: formatCurrencyRoundUp(0)
                   });
              } else if (valorRestante > 1e-6) {
                  if (entradaNum < valorComJuros - 1e-6) {
@@ -250,7 +260,7 @@ const JurosCalculatorScreen = () => {
                      resultadosCalculados.push({
                          entrada: formatCurrency(entradaNum),
                          parcelas: `${qtdParcelas}x`,
-                         valor: formatCurrency(valorParcelado)
+                         valor: formatCurrencyRoundUp(valorParcelado)
                      });
                  }
              }
@@ -314,8 +324,7 @@ const JurosCalculatorScreen = () => {
             }
         }).join('');
 
-        // Texto para compartilhamento via WhatsApp
-        const whatsappText = encodeURIComponent(`Orçamento para: ${cliente}\nProduto: ${produtoServico}\nData: ${data}\nVendedor: ${vendedor}\n\nOpções de Parcelamento:\n${resultados.map(item => {
+        const whatsappText = encodeURIComponent(`Orçamento para: ${cliente || 'Não informado'}\nProduto: ${produtoServico || 'Não informado'}\nData: ${data || 'Não informada'}\nVendedor: ${vendedor || 'Não informado'}\n\nOpções de Parcelamento:\n${resultados.map(item => {
             if (temEntrada) {
                 const numParcelas = parseInt(item.parcelas.replace('x', ''));
                 return `Entrada de ${item.entrada} + ${numParcelas}x de ${item.valor}`;
@@ -330,7 +339,7 @@ const JurosCalculatorScreen = () => {
             <head>
                 <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
-                <title>Orçamento - ${cliente}</title>
+                <title>Orçamento - ${cliente || 'Não informado'}</title>
                 <style>
                     body { 
                         font-family: 'Helvetica Neue', Arial, sans-serif; 
@@ -500,7 +509,7 @@ const JurosCalculatorScreen = () => {
                         <a href="https://wa.me/?text=${whatsappText}" target="_blank" class="share-button whatsapp">
                             Compartilhar via WhatsApp
                         </a>
-                        <a href="mailto:?subject=Orçamento: ${produtoServico}&body=${whatsappText}" class="share-button email">
+                        <a href="mailto:?subject=Orçamento: ${produtoServico || 'Não informado'}&body=${whatsappText}" class="share-button email">
                             Enviar por E-mail
                         </a>
                         <a href="#" onclick="window.print(); return false;" class="share-button print">
@@ -514,10 +523,8 @@ const JurosCalculatorScreen = () => {
                 </div>
                 
                 <script>
-                    // Verificar se o navegador suporta Web Share API
                     if (navigator.share) {
                         document.addEventListener('DOMContentLoaded', function() {
-                            // Adicionar botão de compartilhamento nativo
                             var shareContainer = document.querySelector('.share-buttons');
                             var shareButton = document.createElement('a');
                             shareButton.href = '#';
@@ -529,7 +536,7 @@ const JurosCalculatorScreen = () => {
                                 e.preventDefault();
                                 
                                 navigator.share({
-                                    title: 'Orçamento: ${produtoServico}',
+                                    title: 'Orçamento: ${produtoServico || 'Não informado'}',
                                     text: '${whatsappText.replace(/\\n/g, ' ')}',
                                     url: window.location.href
                                 })
@@ -545,10 +552,8 @@ const JurosCalculatorScreen = () => {
         `;
     };
 
-    // Função para compartilhar diretamente via WhatsApp
     const compartilharViaWhatsApp = (resultados: ResultadoParcela[]) => {
-        // Texto para compartilhamento via WhatsApp
-        const whatsappText = encodeURIComponent(`Orçamento para: ${nomeCliente}\nProduto: ${nomeProdutoServico}\nData: ${dataOrcamento}\nVendedor: ${nomeVendedor}\n\nOpções de Parcelamento:\n${resultados.map(item => {
+        const whatsappText = encodeURIComponent(`Orçamento para: ${nomeCliente || 'Não informado'}\nProduto: ${nomeProdutoServico || 'Não informado'}\nData: ${dataOrcamento || 'Não informada'}\nVendedor: ${nomeVendedor || 'Não informado'}\n\nOpções de Parcelamento:\n${resultados.map(item => {
             if (temEntrada) {
                 const numParcelas = parseInt(item.parcelas.replace('x', ''));
                 return `Entrada de ${item.entrada} + ${numParcelas}x de ${item.valor}`;
@@ -559,7 +564,6 @@ const JurosCalculatorScreen = () => {
         
         const whatsappUrl = `https://wa.me/?text=${whatsappText}`;
         
-        // Abrir WhatsApp
         Linking.canOpenURL(whatsappUrl)
             .then(supported => {
                 if (supported) {
@@ -572,10 +576,6 @@ const JurosCalculatorScreen = () => {
     };
 
     const gerarPdfECompartilhar = async () => {
-        if (!nomeCliente.trim() || !nomeProdutoServico.trim() || !nomeVendedor.trim()) {
-            Alert.alert("Atenção", "Por favor, preencha o nome do cliente, o produto/serviço e o nome do vendedor.");
-            return;
-        }
         if (resultado.length === 0) {
             Alert.alert("Atenção", "Calcule as parcelas primeiro para gerar o orçamento.");
             return;
@@ -608,15 +608,12 @@ const JurosCalculatorScreen = () => {
         try {
             setLoading(true);
             
-            // Abordagem específica para web - compartilhar diretamente via WhatsApp
             if (Platform.OS === 'web') {
-                // Compartilhar diretamente via WhatsApp
                 compartilharViaWhatsApp(resultadosFiltrados);
                 setLoading(false);
                 return;
             }
             
-            // Para dispositivos móveis, usar expo-print e expo-sharing
             const htmlContent = gerarHtmlOrcamento(
                 nomeCliente,
                 nomeProdutoServico,
@@ -784,40 +781,38 @@ const JurosCalculatorScreen = () => {
 
                     {showResults && (
                         <Animated.View style={{ opacity: fadeAnim, marginTop: 25 }}>
-                            <ScrollView horizontal={true} style={{ marginBottom: 15 }}>
-                                <View>
-                                    <View style={styles.tableHeader}>
+                            <View style={styles.tableContainer}>
+                                <View style={styles.tableHeader}>
+                                    {temEntrada ? (
+                                        <>
+                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Plano</Text>
+                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Valor</Text>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Parcelas</Text>
+                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Valor da Parcela</Text>
+                                        </>
+                                    )}
+                                </View>
+                                {resultado.map((item, index) => (
+                                    <View key={index} style={[styles.tableRow, index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd]}>
                                         {temEntrada ? (
                                             <>
-                                                <Text style={[styles.tableHeaderCell, { width: 200 }]}>Entrada</Text>
-                                                <Text style={[styles.tableHeaderCell, { width: 150 }]}>Parcelas</Text>
+                                                <Text style={[styles.tableCell, { flex: 1 }]}>
+                                                    Entrada de {item.entrada} + {item.parcelas}
+                                                </Text>
+                                                <Text style={[styles.tableCell, { flex: 1 }]}>{item.valor}</Text>
                                             </>
                                         ) : (
                                             <>
-                                                <Text style={[styles.tableHeaderCell, { width: 100 }]}> Quantidade Parcelas</Text>
-                                                <Text style={[styles.tableHeaderCell, { width: 150 }]}>Valor das Parcelas</Text>
+                                                <Text style={[styles.tableCell, { flex: 1 }]}>{item.parcelas}</Text>
+                                                <Text style={[styles.tableCell, { flex: 1 }]}>{item.valor}</Text>
                                             </>
                                         )}
                                     </View>
-                                    {resultado.map((item, index) => (
-                                        <View key={index} style={[styles.tableRow, index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd]}>
-                                            {temEntrada ? (
-                                                <>
-                                                    <Text style={[styles.tableCell, { width: 200 }]}>
-                                                        {item.entrada} + {item.parcelas}
-                                                    </Text>
-                                                    <Text style={[styles.tableCell, { width: 150 }]}>{item.valor}</Text>
-                                                </>
-                                            ) : (
-                                                <>
-                                                    <Text style={[styles.tableCell, { width: 100 }]}>{item.parcelas}</Text>
-                                                    <Text style={[styles.tableCell, { width: 150 }]}>{item.valor}</Text>
-                                                </>
-                                            )}
-                                        </View>
-                                    ))}
-                                </View>
-                            </ScrollView>
+                                ))}
+                            </View>
                         </Animated.View>
                     )}
 
@@ -851,7 +846,7 @@ const JurosCalculatorScreen = () => {
                         onChangeText={setDataOrcamento}
                         placeholderTextColor="#B0BEC5"
                     />
-                    <Text style={styles.labelIntervalo}>Intervalo de Parcelas para PDF:</Text>
+                    <Text style={styles.labelIntervalo}>Intervalo de Parcelas:</Text>
                     <View style={styles.intervaloParcelasContainer}>
                         <TextInput
                             style={styles.inputIntervalo}
@@ -1008,7 +1003,7 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         width: 40
     },
-    gerarPdfButton: { backgroundColor: '#25D366' }, // Cor do WhatsApp
+    gerarPdfButton: { backgroundColor: '#25D366' },
     calcButtonPressed: {
         opacity: 0.7,
         transform: [{ scale: 0.98 }],
@@ -1053,6 +1048,12 @@ const styles = StyleSheet.create({
     checkboxLabel: {
         fontSize: 16,
         color: '#ECEFF1',
+    },
+    tableContainer: {
+        width: '100%',
+        marginBottom: 20,
+        borderRadius: 8,
+        overflow: 'hidden',
     },
     tableHeader: {
         flexDirection: 'row',
