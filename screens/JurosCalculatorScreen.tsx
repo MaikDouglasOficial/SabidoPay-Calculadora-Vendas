@@ -13,7 +13,8 @@ import {
     Pressable,
     Animated,
     LayoutAnimation,
-    UIManager
+    UIManager,
+    Linking
 } from 'react-native';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing';
@@ -74,6 +75,8 @@ const JurosCalculatorScreen = () => {
     const [showResults, setShowResults] = useState(false);
     const fadeAnim = useState(new Animated.Value(0))[0];
 
+    // Estado para armazenar o URL do PDF gerado (para web)
+    const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
     useEffect(() => {
         const cleanedDisplay = calcDisplay.replace(/[^0-9,.]/g, '');
@@ -439,6 +442,25 @@ const JurosCalculatorScreen = () => {
         `;
     };
 
+    // Função para criar um Blob e URL para download direto no navegador
+    const createPdfBlobUrl = (htmlContent: string) => {
+        if (Platform.OS === 'web') {
+            try {
+                // Criar um Blob com o conteúdo HTML
+                const blob = new Blob([htmlContent], { type: 'text/html' });
+                
+                // Criar uma URL para o Blob
+                const url = URL.createObjectURL(blob);
+                
+                return url;
+            } catch (error) {
+                console.error("Erro ao criar URL do Blob:", error);
+                return null;
+            }
+        }
+        return null;
+    };
+
     const gerarPdfECompartilhar = async () => {
         if (!nomeCliente.trim() || !nomeProdutoServico.trim() || !nomeVendedor.trim()) {
             Alert.alert("Atenção", "Por favor, preencha o nome do cliente, o produto/serviço e o nome do vendedor.");
@@ -487,22 +509,27 @@ const JurosCalculatorScreen = () => {
         try {
             setLoading(true);
             
-            // Configuração específica para garantir que o PDF seja gerado corretamente
-            const options = {
-                html: htmlContent,
-                base64: false,
-                width: 612, // Largura padrão de página A4 em pontos
-                height: 792, // Altura padrão de página A4 em pontos
-                // Configurações adicionais para melhorar a renderização
-                margins: {
-                    top: 40,
-                    bottom: 40,
-                    left: 40,
-                    right: 40
+            // Abordagem específica para web
+            if (Platform.OS === 'web') {
+                // Criar um link para download direto do HTML
+                const url = createPdfBlobUrl(htmlContent);
+                
+                if (url) {
+                    setPdfUrl(url);
+                    
+                    // Abrir em nova aba para visualização/download
+                    window.open(url, '_blank');
+                    
+                    setLoading(false);
+                    return;
                 }
-            };
+            }
             
-            const { uri } = await Print.printToFileAsync(options);
+            // Abordagem para dispositivos móveis (continua usando expo-print)
+            const { uri } = await Print.printToFileAsync({ 
+                html: htmlContent, 
+                base64: false 
+            });
 
             if (!(await Sharing.isAvailableAsync())) {
                 Alert.alert("Erro", "Compartilhamento não está disponível neste dispositivo.");
