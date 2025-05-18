@@ -804,7 +804,7 @@ const JurosCalculatorScreen = () => {
                                             {temEntrada ? (
                                                 <>
                                                     <Text style={[styles.tableCell, { width: 200 }]}>
-                                                        Entrada de {item.entrada} + {item.parcelas}
+                                                        Entrada: {item.entrada} + {item.parcelas}
                                                     </Text>
                                                     <Text style={[styles.tableCell, { width: 150 }]}>{item.valor}</Text>
                                                 </>
