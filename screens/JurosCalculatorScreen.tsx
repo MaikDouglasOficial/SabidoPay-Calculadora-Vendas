@@ -224,17 +224,31 @@ const JurosCalculatorScreen = () => {
             return;
         }
 
+        // Validação para campo de entrada obrigatório quando a opção estiver ativada
+        if (temEntrada) {
+            if (!valorEntrada || valorEntrada.trim() === '' || valorEntrada === '0' || valorEntrada === '00') {
+                setLoading(false);
+                Alert.alert("Atenção", "O valor da entrada é obrigatório quando a opção 'Adicionar Entrada' está selecionada.");
+                return;
+            }
+        }
+
         let entradaNum = 0;
         if (temEntrada) {
             try {
                 const parsedEntrada = parseFloat(valorEntrada.replace(',', '.') || '0');
-                 if (isNaN(parsedEntrada) && valorEntrada.trim() !== '') {
-                     throw new Error("Valor da entrada inválido.");
-                 }
-                entradaNum = Math.max(0, parsedEntrada);
+                if (isNaN(parsedEntrada)) {
+                    throw new Error("Valor da entrada inválido.");
+                }
+                if (parsedEntrada <= 0) {
+                    setLoading(false);
+                    Alert.alert("Atenção", "O valor da entrada deve ser maior que zero.");
+                    return;
+                }
+                entradaNum = parsedEntrada;
             } catch (error: any) {
                 setLoading(false);
-                 Alert.alert("Erro", "Erro ao ler valor da entrada: " + error.message);
+                Alert.alert("Erro", "Erro ao ler valor da entrada: " + error.message);
                 return;
             }
         }
@@ -654,7 +668,7 @@ const JurosCalculatorScreen = () => {
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
             <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
                 <View style={styles.calculatorContainer}>
-                    <Text style={styles.calculatorTitle}>SabidoPay Calculadora</Text>
+                     
                     <View style={styles.calculatorDisplayContainer}>
                         <Text style={styles.calculatorPreviousValue}>
                             {calcPreviousValue !== null && calcOperator !== null ? `${calcPreviousValue.replace('.', ',')} ${calcOperator}` : ''}
@@ -741,7 +755,12 @@ const JurosCalculatorScreen = () => {
                                     styles.checkboxContainer,
                                     pressed && { opacity: 0.7 }
                                 ]}
-                                onPress={() => setTemEntrada(!temEntrada)}
+                                onPress={() => {
+                                    setTemEntrada(!temEntrada);
+                                    if (!temEntrada) {
+                                        setValorEntrada('');
+                                    }
+                                }}
                             >
                                 <View style={[styles.checkbox, temEntrada && styles.checkboxChecked]}>
                                     {temEntrada && <Text style={styles.checkmark}>✓</Text>}
@@ -785,12 +804,12 @@ const JurosCalculatorScreen = () => {
                                 <View style={styles.tableHeader}>
                                     {temEntrada ? (
                                         <>
-                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Entrada</Text>
-                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Valor da Parcela</Text>
+                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Plano</Text>
+                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Valor</Text>
                                         </>
                                     ) : (
                                         <>
-                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Qtd. Parcelas</Text>
+                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Parcelas</Text>
                                             <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Valor da Parcela</Text>
                                         </>
                                     )}
