@@ -310,29 +310,55 @@ const JurosCalculatorScreen = () => {
             `;
         }).join('');
 
+        // Valor formatado para exibição
+        const valorFormatado = formatCurrency(parseFloat(valorOriginal));
 
         return `
+            <!DOCTYPE html>
             <html>
             <head>
+                <meta charset="utf-8">
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+                <title>Orçamento - ${cliente}</title>
                 <style>
-                    body { font-family: 'Helvetica Neue', Arial, sans-serif; margin: 20px; color: #333; }
+                    body { 
+                        font-family: 'Helvetica Neue', Arial, sans-serif; 
+                        margin: 20px; 
+                        color: #333; 
+                        background-color: #f9f9f9;
+                    }
+                    .container {
+                        max-width: 800px;
+                        margin: 0 auto;
+                        background-color: white;
+                        padding: 30px;
+                        border-radius: 8px;
+                        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+                    }
                     h1 {
                         text-align: center;
                         color: #004D40;
-                        margin-top: 30px;
-                        margin-bottom: 40px;
-                        font-size: 20px;
+                        margin-top: 10px;
+                        margin-bottom: 30px;
+                        font-size: 24px;
                         font-weight: bold;
                     }
                     .info {
-                        margin-bottom: 20px;
-                        font-size: 15px;
-                        color: #555;
+                        margin-bottom: 30px;
+                        font-size: 16px;
+                        color: #333;
                         line-height: 1.6;
+                        background-color: #f5f5f5;
+                        padding: 20px;
+                        border-radius: 6px;
                     }
-                    .info p { margin: 5px 0; }
-                    .info strong { color: #333; }
+                    .info p { margin: 8px 0; }
+                    .info strong { 
+                        color: #004D40; 
+                        font-weight: 600;
+                        display: inline-block;
+                        width: 100px;
+                    }
 
                     table {
                         width: 100%;
@@ -343,59 +369,75 @@ const JurosCalculatorScreen = () => {
                         overflow: hidden;
                     }
                     th, td {
-                        padding: 12px 8px;
+                        padding: 15px 10px;
                         text-align: center;
                     }
                     th {
                         background-color: #00796B;
                         color: white;
-                        font-size: 13px;
+                        font-size: 14px;
                         font-weight: 700;
                         text-transform: uppercase;
                         border-bottom: none;
                     }
-                     td {
-                         border-bottom: 1px solid #eee;
-                         font-size: 14px;
-                         color: #333;
-                     }
-                     tr:last-child td {
-                         border-bottom: none;
-                     }
-                     tr:nth-child(even) {
-                         background-color: #f9f9f9;
-                     }
+                    td {
+                        border-bottom: 1px solid #eee;
+                        font-size: 15px;
+                        color: #333;
+                    }
+                    tr:last-child td {
+                        border-bottom: none;
+                    }
+                    tr:nth-child(even) {
+                        background-color: #f9f9f9;
+                    }
+                    tr:hover {
+                        background-color: #f0f0f0;
+                    }
 
                     .footer {
                         text-align: center;
                         margin-top: 40px;
-                        font-size: 10px;
-                        color: #555;
+                        padding-top: 20px;
+                        border-top: 1px solid #eee;
+                        color: #777;
+                        font-size: 12px;
+                    }
+                    
+                    .watermark {
+                        text-align: center;
+                        margin-top: 50px;
+                        font-size: 11px;
+                        color: #aaa;
+                        font-style: italic;
                     }
                 </style>
             </head>
             <body>
-                <h1>Simulação de Parcelamento (Sujeito à Análise de Crédito)</h1>
-                <div class="info">
-                    <p><strong>Cliente:</strong> ${cliente || 'Não informado'}</p>
-                    <p><strong>Data:</strong> ${data || 'Não informada'}</p>
-                    <p><strong>Descrição:</strong> ${produtoServico || 'Não informada'}</p>
-                    <p><strong>Vendedor:</strong> ${vendedor || 'Não informado'}</p>
-                </div>
-                <table>
-                    ${tableHeaderHtml}
-                    <tbody>
-                        ${tableRowsHtml}
-                    </tbody>
-                </table>
-                <div class="footer">
-                    Gerado por SabidoPay Calculadora
+                <div class="container">
+                    <h1>Simulação de Parcelamento</h1>
+                    <div class="info">
+                        <p><strong>Cliente:</strong> ${cliente || 'Não informado'}</p>
+                        <p><strong>Data:</strong> ${data || 'Não informada'}</p>
+                        <p><strong>Produto:</strong> ${produtoServico || 'Não informado'}</p>
+                        <p><strong>Vendedor:</strong> ${vendedor || 'Não informado'}</p>
+                    </div>
+                    
+                    <table>
+                        ${tableHeaderHtml}
+                        <tbody>
+                            ${tableRowsHtml}
+                        </tbody>
+                    </table>
+                    
+                    <div class="footer">
+                        Gerado por SabidoPay Calculadora. Todos os direitos reservados.
+                    </div>
                 </div>
             </body>
             </html>
         `;
     };
-
 
     const gerarPdfECompartilhar = async () => {
         if (!nomeCliente.trim() || !nomeProdutoServico.trim() || !nomeVendedor.trim()) {
@@ -410,12 +452,10 @@ const JurosCalculatorScreen = () => {
         const inicio = parseInt(parcelaInicialPdf);
         const fim = parseInt(parcelaFinalPdf);
 
-
         if (isNaN(inicio) || isNaN(fim) || inicio < 1 || fim < inicio || inicio > 24 || fim > 24) {
              Alert.alert("Atenção", "Por favor, defina um intervalo de parcelas válido para o PDF (ex: de 1 a 24).");
              return;
          }
-
 
         const resultadosFiltrados = resultado.filter(item => {
             const numParcelas = parseInt(item.parcelas.replace('x', ''));
@@ -433,7 +473,6 @@ const JurosCalculatorScreen = () => {
             return numA - numB;
         });
 
-
         const htmlContent = gerarHtmlOrcamento(
             nomeCliente,
             nomeProdutoServico,
@@ -447,7 +486,23 @@ const JurosCalculatorScreen = () => {
 
         try {
             setLoading(true);
-            const { uri } = await Print.printToFileAsync({ html: htmlContent, base64: false });
+            
+            // Configuração específica para garantir que o PDF seja gerado corretamente
+            const options = {
+                html: htmlContent,
+                base64: false,
+                width: 612, // Largura padrão de página A4 em pontos
+                height: 792, // Altura padrão de página A4 em pontos
+                // Configurações adicionais para melhorar a renderização
+                margins: {
+                    top: 40,
+                    bottom: 40,
+                    left: 40,
+                    right: 40
+                }
+            };
+            
+            const { uri } = await Print.printToFileAsync(options);
 
             if (!(await Sharing.isAvailableAsync())) {
                 Alert.alert("Erro", "Compartilhamento não está disponível neste dispositivo.");
@@ -468,7 +523,6 @@ const JurosCalculatorScreen = () => {
             setLoading(false);
         }
     };
-
 
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
@@ -498,105 +552,127 @@ const JurosCalculatorScreen = () => {
                         </Pressable>
                     </View>
                     <View style={styles.calculatorRow}>
-                         <Pressable style={({ pressed }) => [styles.calcButton, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('7')}>
-                            <Text style={styles.calcButtonText}>7</Text>
+                        <Pressable style={({ pressed }) => [styles.calcButtonNum, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('7')}>
+                            <Text style={styles.calcButtonNumText}>7</Text>
                         </Pressable>
-                        <Pressable style={({ pressed }) => [styles.calcButton, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('8')}>
-                            <Text style={styles.calcButtonText}>8</Text>
+                        <Pressable style={({ pressed }) => [styles.calcButtonNum, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('8')}>
+                            <Text style={styles.calcButtonNumText}>8</Text>
                         </Pressable>
-                        <Pressable style={({ pressed }) => [styles.calcButton, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('9')}>
-                            <Text style={styles.calcButtonText}>9</Text>
+                        <Pressable style={({ pressed }) => [styles.calcButtonNum, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('9')}>
+                            <Text style={styles.calcButtonNumText}>9</Text>
                         </Pressable>
                         <Pressable style={({ pressed }) => [styles.calcButtonOp, pressed && styles.calcButtonPressed]} onPress={() => handleCalcOperatorInput('*')}>
                             <Text style={styles.calcButtonOpText}>*</Text>
                         </Pressable>
                     </View>
                     <View style={styles.calculatorRow}>
-                        <Pressable style={({ pressed }) => [styles.calcButton, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('4')}>
-                            <Text style={styles.calcButtonText}>4</Text>
+                        <Pressable style={({ pressed }) => [styles.calcButtonNum, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('4')}>
+                            <Text style={styles.calcButtonNumText}>4</Text>
                         </Pressable>
-                        <Pressable style={({ pressed }) => [styles.calcButton, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('5')}>
-                            <Text style={styles.calcButtonText}>5</Text>
+                        <Pressable style={({ pressed }) => [styles.calcButtonNum, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('5')}>
+                            <Text style={styles.calcButtonNumText}>5</Text>
                         </Pressable>
-                        <Pressable style={({ pressed }) => [styles.calcButton, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('6')}>
-                            <Text style={styles.calcButtonText}>6</Text>
+                        <Pressable style={({ pressed }) => [styles.calcButtonNum, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('6')}>
+                            <Text style={styles.calcButtonNumText}>6</Text>
                         </Pressable>
                         <Pressable style={({ pressed }) => [styles.calcButtonOp, pressed && styles.calcButtonPressed]} onPress={() => handleCalcOperatorInput('-')}>
                             <Text style={styles.calcButtonOpText}>-</Text>
                         </Pressable>
                     </View>
                     <View style={styles.calculatorRow}>
-                        <Pressable style={({ pressed }) => [styles.calcButton, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('1')}>
-                            <Text style={styles.calcButtonText}>1</Text>
+                        <Pressable style={({ pressed }) => [styles.calcButtonNum, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('1')}>
+                            <Text style={styles.calcButtonNumText}>1</Text>
                         </Pressable>
-                        <Pressable style={({ pressed }) => [styles.calcButton, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('2')}>
-                            <Text style={styles.calcButtonText}>2</Text>
+                        <Pressable style={({ pressed }) => [styles.calcButtonNum, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('2')}>
+                            <Text style={styles.calcButtonNumText}>2</Text>
                         </Pressable>
-                        <Pressable style={({ pressed }) => [styles.calcButton, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('3')}>
-                            <Text style={styles.calcButtonText}>3</Text>
+                        <Pressable style={({ pressed }) => [styles.calcButtonNum, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('3')}>
+                            <Text style={styles.calcButtonNumText}>3</Text>
                         </Pressable>
                         <Pressable style={({ pressed }) => [styles.calcButtonOp, pressed && styles.calcButtonPressed]} onPress={() => handleCalcOperatorInput('+')}>
                             <Text style={styles.calcButtonOpText}>+</Text>
                         </Pressable>
                     </View>
                     <View style={styles.calculatorRow}>
-                        <Pressable style={({ pressed }) => [styles.calcButton, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('0')}>
-                            <Text style={styles.calcButtonText}>0</Text>
+                        <Pressable style={({ pressed }) => [styles.calcButtonNum, pressed && styles.calcButtonPressed]} onPress={() => handleCalcNumberInput('0')}>
+                            <Text style={styles.calcButtonNumText}>0</Text>
                         </Pressable>
-                        <Pressable style={({ pressed }) => [styles.calcButton, pressed && styles.calcButtonPressed]} onPress={handleCalcDecimalInput}>
-                            <Text style={styles.calcButtonText}>,</Text>
+                        <Pressable style={({ pressed }) => [styles.calcButtonNum, pressed && styles.calcButtonPressed]} onPress={handleCalcDecimalInput}>
+                            <Text style={styles.calcButtonNumText}>,</Text>
                         </Pressable>
-                        <Pressable style={({ pressed }) => [styles.calcButtonOp, pressed && styles.calcButtonPressed]} onPress={handleBackspace}>
-                            <Text style={styles.calcButtonOpText}>←</Text>
+                        <Pressable style={({ pressed }) => [styles.calcButtonNum, pressed && styles.calcButtonPressed]} onPress={handleBackspace}>
+                            <Text style={styles.calcButtonNumText}>←</Text>
                         </Pressable>
                         <Pressable style={({ pressed }) => [styles.calcButtonEquals, pressed && styles.calcButtonPressed]} onPress={handleCalcEquals}>
                             <Text style={styles.calcButtonEqualsText}>=</Text>
                         </Pressable>
                     </View>
+
+                    <View style={styles.bottomActionRow}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 15 }}>
+                            <Pressable
+                                style={({ pressed }) => [
+                                    styles.checkboxContainer,
+                                    pressed && { opacity: 0.7 }
+                                ]}
+                                onPress={() => setTemEntrada(!temEntrada)}
+                            >
+                                <View style={[styles.checkbox, temEntrada && styles.checkboxChecked]}>
+                                    {temEntrada && <Text style={styles.checkmark}>✓</Text>}
+                                </View>
+                                <Text style={styles.checkboxLabel}>Adicionar Entrada</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+
                     {temEntrada && (
                         <TextInput
-                            placeholder="Valor da Entrada (R$)"
-                            placeholderTextColor="#B0BEC5"
+                            style={styles.entradaInput}
+                            placeholder="Valor da Entrada"
                             keyboardType="numeric"
                             value={valorEntrada}
-                            onChangeText={(text) => {
-                                let cleaned = text.replace(/[^0-9,.]/g, '');
-                                cleaned = cleaned.replace(/,/g, '.');
-                                const parts = cleaned.split('.');
-                                if (parts.length > 2) {
-                                    cleaned = parts[0] + '.' + parts.slice(1).join('');
-                                }
-                                setValorEntrada(cleaned);
-                            }}
-                            style={styles.entradaInput}
+                            onChangeText={setValorEntrada}
+                            placeholderTextColor="#B0BEC5"
                         />
                     )}
-                    <View style={styles.bottomActionRow}>
-                        <Pressable style={({ pressed }) => [styles.calcActionButton, { marginRight: 5 }, temEntrada ? styles.ativoEntrada : styles.inativoEntrada, pressed && styles.calcActionButtonPressed]} onPress={() => setTemEntrada(!temEntrada)}>
-                            <Text style={styles.calcActionButtonText}>{temEntrada ? 'Rem. Entrada' : 'Add. Entrada'}</Text>
-                        </Pressable>
-                        <Pressable style={({ pressed }) => [styles.calcActionButton, styles.calcularButtonColor, { marginLeft: 5 }, (loading || valorProduto === '0') && styles.calcActionButtonDisabled, pressed && styles.calcActionButtonPressed]} onPress={calcularParcela} disabled={loading || valorProduto === '0'}>
-                            {loading ? <ActivityIndicator color="#fff" size="small" /> : <Text style={styles.calcActionButtonText}>Simular</Text>}
-                        </Pressable>
-                    </View>
-                </View>
 
-                {showResults && (
-                    <Animated.View style={[styles.resultBox, { opacity: fadeAnim }]}>
-                        <View style={styles.tableHeader}>
-                            <Text style={styles.tableHeaderText}>Entrada</Text>
-                            <Text style={styles.tableHeaderText}>Parcelas</Text>
-                            <Text style={styles.tableHeaderText}>Valor</Text>
-                        </View>
-                        {resultado.map((item, index) => (
-                            <View key={index} style={styles.tableRow}>
-                                <Text style={styles.tableCell}>{item.entrada}</Text>
-                                <Text style={styles.tableCell}>{item.parcelas}</Text>
-                                <Text style={styles.tableCell}>{item.valor}</Text>
-                            </View>
-                        ))}
-                    </Animated.View>
-                )}
+                    <Pressable
+                        style={({ pressed }) => [
+                            styles.calcActionButton,
+                            styles.calcularButtonColor,
+                            pressed && styles.calcActionButtonPressed,
+                            loading && styles.calcActionButtonDisabled
+                        ]}
+                        onPress={calcularParcela}
+                        disabled={loading}
+                    >
+                        {loading ? (
+                            <ActivityIndicator color="#ECEFF1" size="small" />
+                        ) : (
+                            <Text style={styles.calcActionButtonText}>Calcular Parcelas</Text>
+                        )}
+                    </Pressable>
+
+                    {showResults && (
+                        <Animated.View style={{ opacity: fadeAnim, marginTop: 25 }}>
+                            <ScrollView horizontal={true} style={{ marginBottom: 15 }}>
+                                <View>
+                                    <View style={styles.tableHeader}>
+                                        {temEntrada && <Text style={[styles.tableHeaderCell, { width: 120 }]}>Entrada</Text>}
+                                        <Text style={[styles.tableHeaderCell, { width: 100 }]}>Parcelas</Text>
+                                        <Text style={[styles.tableHeaderCell, { width: 150 }]}>Valor da Parcela</Text>
+                                    </View>
+                                    {resultado.map((item, index) => (
+                                        <View key={index} style={[styles.tableRow, index % 2 === 0 ? styles.tableRowEven : styles.tableRowOdd]}>
+                                            {temEntrada && <Text style={[styles.tableCell, { width: 120 }]}>{item.entrada}</Text>}
+                                            <Text style={[styles.tableCell, { width: 100 }]}>{item.parcelas}</Text>
+                                            <Text style={[styles.tableCell, { width: 150 }]}>{item.valor}</Text>
+                                        </View>
+                                    ))}
+                                </View>
+                            </ScrollView>
+                        </Animated.View>
+                    )}
 
                 <View style={styles.orcamentoContainer}>
                     <Text style={styles.orcamentoTitle}>Dados para Orçamento</Text>
@@ -631,7 +707,7 @@ const JurosCalculatorScreen = () => {
                     <Text style={styles.labelIntervalo}>Intervalo de Parcelas para PDF:</Text>
                     <View style={styles.intervaloParcelasContainer}>
                         <TextInput
-                            style={[styles.inputOrcamento, styles.inputIntervalo]}
+                            style={styles.inputIntervalo}
                             placeholder="De (ex: 2)"
                             keyboardType="numeric"
                             value={parcelaInicialPdf}
@@ -640,7 +716,7 @@ const JurosCalculatorScreen = () => {
                         />
                         <Text style={styles.intervaloLabel}>até</Text>
                         <TextInput
-                            style={[styles.inputOrcamento, styles.inputIntervalo]}
+                            style={styles.inputIntervalo}
                             placeholder="Até (ex: 12)"
                             keyboardType="numeric"
                             value={parcelaFinalPdf}
@@ -649,54 +725,72 @@ const JurosCalculatorScreen = () => {
                         />
                     </View>
                     <Pressable
-                        style={({ pressed }) => [styles.calcActionButton, styles.gerarPdfButton, (loading || resultado.length === 0) && styles.calcActionButtonDisabled, pressed && styles.calcActionButtonPressed]}
+                        style={({ pressed }) => [
+                            styles.calcActionButton,
+                            styles.gerarPdfButton,
+                            pressed && styles.calcActionButtonPressed,
+                            loading && styles.calcActionButtonDisabled
+                        ]}
                         onPress={gerarPdfECompartilhar}
-                        disabled={loading || resultado.length === 0}
+                        disabled={loading}
                     >
-                        {loading ? <ActivityIndicator color="#fff" size="small" /> : <Text style={styles.calcActionButtonText}>Compartilhar Orçamento</Text>}
+                        {loading ? (
+                            <ActivityIndicator color="#ECEFF1" size="small" />
+                        ) : (
+                            <Text style={styles.calcActionButtonText}>Compartilhar Orçamento</Text>
+                        )}
                     </Pressable>
                 </View>
 
-                <Text style={styles.copyrightText}>
-                    © {new Date().getFullYear()} SabidoPay Calculadora. Todos os direitos reservados.
-                </Text>
-
-                <View style={{ height: 50 }} />
-
-
+                <Text style={styles.copyrightText}>© 2025 SabidoPay Calculadora. Todos os direitos reservados.</Text>
+                </View>
             </ScrollView>
         </KeyboardAvoidingView>
     );
 };
 
 const styles = StyleSheet.create({
-    container: { flex: 1, padding: 20, backgroundColor: '#263238' },
-    ativoEntrada: { backgroundColor: '#C62828' },
-    inativoEntrada: { backgroundColor: '#004D40' },
-    resultBox: { backgroundColor: '#37474F', borderRadius: 10, padding: 15, marginTop: 25, borderColor: '#455A64', borderWidth: 1, elevation: 3, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.3, shadowRadius: 2, marginBottom: 20 },
-    tableHeader: { flexDirection: 'row', justifyContent: 'space-between', borderBottomWidth: 1, borderColor: '#546E7A', paddingBottom: 8, marginBottom: 8 },
-    tableHeaderText: { fontWeight: 'bold', fontSize: 15, width: '33%', textAlign: 'center', color: '#ECEFF1' },
-    tableRow: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 10, borderBottomWidth: 1, borderColor: '#455A64', alignItems: 'center' },
-    tableCell: { width: '33%', textAlign: 'center', fontSize: 14, color: '#CFD8DC' },
-    calculatorContainer: { marginBottom: 20, backgroundColor: '#37474F', borderRadius: 10, padding: 20, elevation: 5, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.4, shadowRadius: 3.84 },
-    calculatorTitle: { fontSize: 20, fontWeight: 'bold', color: '#B0BEC5', marginBottom: 15, textAlign: 'center' },
+    container: {
+        flex: 1,
+        paddingHorizontal: 16,
+        paddingTop: 20,
+        paddingBottom: 20,
+        backgroundColor: '#263238',
+    },
+    calculatorContainer: {
+        backgroundColor: '#37474F',
+        borderRadius: 16,
+        padding: 20,
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        marginBottom: 20,
+        flex: 1,
+    },
+    calculatorTitle: {
+        fontSize: 22,
+        fontWeight: 'bold',
+        color: '#B0BEC5',
+        marginBottom: 20,
+        textAlign: 'center',
+    },
     calculatorDisplayContainer: {
         backgroundColor: '#455A64',
         borderRadius: 8,
-        paddingVertical: 16,
-        paddingHorizontal: 18,
-
+        padding: 16,
         marginBottom: 20,
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        justifyContent: 'flex-end',
-        minHeight: 90,
+        elevation: 2,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 1 },
+        shadowOpacity: 0.2,
+        shadowRadius: 1.41,
     },
     calculatorPreviousValue: {
-        fontSize: 22,
+        fontSize: 16,
         color: "#B0BEC5",
         textAlign: "right",
-        fontWeight: "400",
         marginBottom: 4,
         flexShrink: 1,
         flexWrap: 'wrap',
@@ -710,8 +804,8 @@ const styles = StyleSheet.create({
         flexShrink: 1,
     },
     calculatorRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 16, alignItems: 'center' },
-    calcButton: { width: '23%', aspectRatio: 1, borderRadius: 8, alignItems: 'center', justifyContent: 'center', elevation: 3, backgroundColor: '#546E7A' },
-    calcButtonText: { fontSize: 28, fontWeight: 'bold', color: '#ECEFF1' },
+    calcButtonNum: { width: '23%', aspectRatio: 1, borderRadius: 8, alignItems: 'center', justifyContent: 'center', elevation: 3, backgroundColor: '#546E7A' },
+    calcButtonNumText: { fontSize: 28, fontWeight: 'bold', color: '#ECEFF1' },
     calcButtonOp: { width: '23%', aspectRatio: 1, borderRadius: 8, alignItems: 'center', justifyContent: 'center', elevation: 3, backgroundColor: '#455A64' },
     calcButtonOpText: { fontSize: 28, fontWeight: 'bold', color: '#ECEFF1' },
     calcButtonClear: { width: '23%', aspectRatio: 1, borderRadius: 8, alignItems: 'center', justifyContent: 'center', elevation: 3, backgroundColor: '#D32F2F' },
@@ -727,14 +821,47 @@ const styles = StyleSheet.create({
     calcActionButton: { flex: 1, paddingVertical: 16, borderRadius: 8, alignItems: 'center', justifyContent: 'center', elevation: 3 },
     calcActionButtonText: { fontSize: 17, fontWeight: 'bold', color: '#ECEFF1' },
     calcularButtonColor: { backgroundColor: '#004D40' },
-    orcamentoContainer: { marginTop: 30, padding: 20, backgroundColor: '#37474F', borderRadius: 10, elevation: 4, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.35, shadowRadius: 2.62, marginBottom: 20 },
+    orcamentoContainer: { 
+        marginTop: 30, 
+        padding: 20, 
+        backgroundColor: '#37474F', 
+        borderRadius: 10, 
+        elevation: 4, 
+        shadowColor: '#000', 
+        shadowOffset: { width: 0, height: 2 }, 
+        shadowOpacity: 0.35, 
+        shadowRadius: 2.62, 
+        marginBottom: 20 
+    },
     orcamentoTitle: { fontSize: 19, fontWeight: 'bold', color: '#B0BEC5', marginBottom: 18, textAlign: 'center' },
     inputOrcamento: { backgroundColor: '#455A64', borderColor: '#546E7A', borderWidth: 1, borderRadius: 6, padding: 14, fontSize: 16, marginBottom: 14, color: '#ECEFF1' },
-    labelIntervalo: { fontSize: 16, color: '#B0BEC5', marginTop: 8, marginBottom: 6 },
-    intervaloParcelasContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 18 },
-    inputIntervalo: { flex: 1, marginHorizontal: 6, backgroundColor: '#455A64', borderColor: '#546E7A', borderWidth: 1, borderRadius: 6, padding: 14, fontSize: 16, color: '#ECEFF1' },
-    intervaloLabel: { fontSize: 16, color: '#B0BEC5', marginHorizontal: 6 },
-    gerarPdfButton: { backgroundColor: '#00251A' },
+    labelIntervalo: { fontSize: 16, color: '#B0BEC5', marginTop: 8, marginBottom: 12 },
+    intervaloParcelasContainer: { 
+        flexDirection: 'row', 
+        alignItems: 'center', 
+        justifyContent: 'space-between', 
+        marginBottom: 18,
+        flexWrap: 'nowrap'
+    },
+    inputIntervalo: { 
+        flex: 1, 
+        maxWidth: '42%',
+        backgroundColor: '#455A64', 
+        borderColor: '#546E7A', 
+        borderWidth: 1, 
+        borderRadius: 6, 
+        padding: 14, 
+        fontSize: 16, 
+        color: '#ECEFF1' 
+    },
+    intervaloLabel: { 
+        fontSize: 16, 
+        color: '#B0BEC5', 
+        marginHorizontal: 10,
+        textAlign: 'center',
+        width: 40
+    },
+    gerarPdfButton: { backgroundColor: '#00796B' },
     calcButtonPressed: {
         opacity: 0.7,
         transform: [{ scale: 0.98 }],
@@ -752,6 +879,63 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 20,
         marginBottom: 10,
+    },
+    checkboxContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    checkbox: {
+        width: 22,
+        height: 22,
+        borderRadius: 4,
+        borderWidth: 2,
+        borderColor: '#B0BEC5',
+        marginRight: 10,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    checkboxChecked: {
+        backgroundColor: '#004D40',
+        borderColor: '#00796B',
+    },
+    checkmark: {
+        color: '#ECEFF1',
+        fontSize: 14,
+        fontWeight: 'bold',
+    },
+    checkboxLabel: {
+        fontSize: 16,
+        color: '#ECEFF1',
+    },
+    tableHeader: {
+        flexDirection: 'row',
+        backgroundColor: '#004D40',
+        padding: 10,
+        borderTopLeftRadius: 8,
+        borderTopRightRadius: 8,
+    },
+    tableHeaderCell: {
+        color: '#ECEFF1',
+        fontWeight: 'bold',
+        fontSize: 14,
+        textAlign: 'center',
+    },
+    tableRow: {
+        flexDirection: 'row',
+        padding: 10,
+        borderBottomWidth: 1,
+        borderBottomColor: '#455A64',
+    },
+    tableRowEven: {
+        backgroundColor: '#455A64',
+    },
+    tableRowOdd: {
+        backgroundColor: '#37474F',
+    },
+    tableCell: {
+        color: '#ECEFF1',
+        fontSize: 14,
+        textAlign: 'center',
     },
 });
 
