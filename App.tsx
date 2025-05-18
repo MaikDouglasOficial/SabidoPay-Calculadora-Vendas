@@ -12,7 +12,7 @@ export default function App() {
         <Stack.Screen
           name="JurosCalculator"
           component={JurosCalculatorScreen}
-          options={{ title: 'Calculadora de Juros' }}
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>
