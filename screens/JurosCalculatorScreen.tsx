@@ -103,7 +103,7 @@ const JurosCalculatorScreen = () => {
             setShowResults(false);
             fadeAnim.setValue(0);
         }
-         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+        LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
     }, [resultado]);
 
     const handleCalcNumberInput = (num: string) => {
@@ -219,7 +219,7 @@ const JurosCalculatorScreen = () => {
         }
 
         if (valorInicial <= 0) {
-             if (valorProduto !== '0') Alert.alert("Atenção", "Valor do produto zerado ou inválido.");
+            if (valorProduto !== '0') Alert.alert("Atenção", "Valor do produto zerado ou inválido.");
             setLoading(false);
             return;
         }
@@ -262,29 +262,29 @@ const JurosCalculatorScreen = () => {
             const valorComJuros = valorInicial * (1 + jurosAplicado / 100);
             const valorRestante = valorComJuros - entradaNum;
 
-             if (qtdParcelas === 1 && valorRestante <= 1e-6) {
-                  resultadosCalculados.push({
-                      entrada: formatCurrency(entradaNum),
-                      parcelas: `1x`,
-                      valor: formatCurrencyRoundUp(0)
-                  });
-             } else if (valorRestante > 1e-6) {
-                 if (entradaNum < valorComJuros - 1e-6) {
-                     const valorParcelado = valorRestante / qtdParcelas;
-                     resultadosCalculados.push({
-                         entrada: formatCurrency(entradaNum),
-                         parcelas: `${qtdParcelas}x`,
-                         valor: formatCurrencyRoundUp(valorParcelado)
-                     });
-                 }
-             }
+            if (qtdParcelas === 1 && valorRestante <= 1e-6) {
+                resultadosCalculados.push({
+                    entrada: formatCurrency(entradaNum),
+                    parcelas: `1x`,
+                    valor: formatCurrencyRoundUp(0)
+                });
+            } else if (valorRestante > 1e-6) {
+                if (entradaNum < valorComJuros - 1e-6) {
+                    const valorParcelado = valorRestante / qtdParcelas;
+                    resultadosCalculados.push({
+                        entrada: formatCurrency(entradaNum),
+                        parcelas: `${qtdParcelas}x`,
+                        valor: formatCurrencyRoundUp(valorParcelado)
+                    });
+                }
+            }
         });
 
-         resultadosCalculados.sort((a, b) => {
-             const numA = parseInt(a.parcelas.replace('x', ''));
-             const numB = parseInt(b.parcelas.replace('x', ''));
-             return numA - numB;
-         });
+        resultadosCalculados.sort((a, b) => {
+            const numA = parseInt(a.parcelas.replace('x', ''));
+            const numB = parseInt(b.parcelas.replace('x', ''));
+            return numA - numB;
+        });
 
 
         setTimeout(() => {
@@ -589,9 +589,9 @@ const JurosCalculatorScreen = () => {
             resultados,
             temEntrada
         );
-        
+
         const whatsappUrl = `https://wa.me/?text=${whatsappText}`;
-        
+
         Linking.canOpenURL(whatsappUrl)
             .then(supported => {
                 if (supported) {
@@ -613,9 +613,9 @@ const JurosCalculatorScreen = () => {
         const fim = parseInt(parcelaFinalPdf);
 
         if (isNaN(inicio) || isNaN(fim) || inicio < 1 || fim < inicio || inicio > 24 || fim > 24) {
-             Alert.alert("Atenção", "Por favor, defina um intervalo de parcelas válido para o PDF (ex: de 1 a 24).");
-             return;
-         }
+            Alert.alert("Atenção", "Por favor, defina um intervalo de parcelas válido para o PDF (ex: de 1 a 24).");
+            return;
+        }
 
         const resultadosFiltrados = resultado.filter(item => {
             const numParcelas = parseInt(item.parcelas.replace('x', ''));
@@ -635,13 +635,13 @@ const JurosCalculatorScreen = () => {
 
         try {
             setLoading(true);
-            
+
             if (Platform.OS === 'web') {
                 compartilharViaWhatsApp(resultadosFiltrados);
                 setLoading(false);
                 return;
             }
-            
+
             const htmlContent = gerarHtmlOrcamento(
                 nomeCliente,
                 nomeProdutoServico,
@@ -652,10 +652,10 @@ const JurosCalculatorScreen = () => {
                 temEntrada,
                 nomeVendedor
             );
-            
-            const { uri } = await Print.printToFileAsync({ 
-                html: htmlContent, 
-                base64: false 
+
+            const { uri } = await Print.printToFileAsync({
+                html: htmlContent,
+                base64: false
             });
 
             if (!(await Sharing.isAvailableAsync())) {
@@ -682,7 +682,7 @@ const JurosCalculatorScreen = () => {
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
             <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
                 <View style={styles.calculatorContainer}>
-                    
+                    <Text style={styles.calculatorTitle}>SabidoPay Calculadora</Text>
                     <View style={styles.calculatorDisplayContainer}>
                         <Text style={styles.calculatorPreviousValue}>
                             {calcPreviousValue !== null && calcOperator !== null ? `${calcPreviousValue.replace('.', ',')} ${calcOperator}` : ''}
@@ -818,12 +818,12 @@ const JurosCalculatorScreen = () => {
                                 <View style={styles.tableHeader}>
                                     {temEntrada ? (
                                         <>
-                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Plano</Text>
-                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Valor</Text>
+                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Entrada</Text>
+                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Parcelas</Text>
                                         </>
                                     ) : (
                                         <>
-                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Parcelas</Text>
+                                            <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Parcelamento</Text>
                                             <Text style={[styles.tableHeaderCell, { flex: 1 }]}>Valor da Parcela</Text>
                                         </>
                                     )}
@@ -833,7 +833,7 @@ const JurosCalculatorScreen = () => {
                                         {temEntrada ? (
                                             <>
                                                 <Text style={[styles.tableCell, { flex: 1 }]}>
-                                                    Entrada de {item.entrada}
+                                                    {item.entrada}
                                                 </Text>
                                                 <Text style={[styles.tableCell, { flex: 1 }]}>
                                                     {parseInt(item.parcelas.replace('x', ''))}x {item.valor}
@@ -851,75 +851,75 @@ const JurosCalculatorScreen = () => {
                         </Animated.View>
                     )}
 
-                <View style={styles.orcamentoContainer}>
-                    <Text style={styles.orcamentoTitle}>Dados para Orçamento</Text>
-                    <TextInput
-                        style={styles.inputOrcamento}
-                        placeholder="Nome do Cliente"
-                        value={nomeCliente}
-                        onChangeText={setNomeCliente}
-                        placeholderTextColor="#B0BEC5"
-                    />
-                    <TextInput
-                        style={styles.inputOrcamento}
-                        placeholder="Produto/Serviço"
-                        value={nomeProdutoServico}
-                        onChangeText={setNomeProdutoServico}
-                        placeholderTextColor="#B0BEC5"
-                    />
-                    <TextInput
-                        style={styles.inputOrcamento}
-                        placeholder="Nome do Vendedor"
-                        value={nomeVendedor}
-                        onChangeText={setNomeVendedor}
-                        placeholderTextColor="#B0BEC5"
-                    />
-                    <TextInput
-                        style={styles.inputOrcamento}
-                        placeholder="Data do Orçamento (ex: DD/MM/AAAA)"
-                        value={dataOrcamento}
-                        onChangeText={setDataOrcamento}
-                        placeholderTextColor="#B0BEC5"
-                    />
-                    <Text style={styles.labelIntervalo}>Intervalo de Parcelas:</Text>
-                    <View style={styles.intervaloParcelasContainer}>
+                    <View style={styles.orcamentoContainer}>
+                        <Text style={styles.orcamentoTitle}>Dados para Orçamento</Text>
                         <TextInput
-                            style={styles.inputIntervalo}
-                            placeholder="De (ex: 2)"
-                            keyboardType="numeric"
-                            value={parcelaInicialPdf}
-                            onChangeText={setParcelaInicialPdf}
+                            style={styles.inputOrcamento}
+                            placeholder="Nome do Cliente"
+                            value={nomeCliente}
+                            onChangeText={setNomeCliente}
                             placeholderTextColor="#B0BEC5"
                         />
-                        <Text style={styles.intervaloLabel}>até</Text>
                         <TextInput
-                            style={styles.inputIntervalo}
-                            placeholder="Até (ex: 12)"
-                            keyboardType="numeric"
-                            value={parcelaFinalPdf}
-                            onChangeText={setParcelaFinalPdf}
+                            style={styles.inputOrcamento}
+                            placeholder="Produto/Serviço"
+                            value={nomeProdutoServico}
+                            onChangeText={setNomeProdutoServico}
                             placeholderTextColor="#B0BEC5"
                         />
+                        <TextInput
+                            style={styles.inputOrcamento}
+                            placeholder="Nome do Vendedor"
+                            value={nomeVendedor}
+                            onChangeText={setNomeVendedor}
+                            placeholderTextColor="#B0BEC5"
+                        />
+                        <TextInput
+                            style={styles.inputOrcamento}
+                            placeholder="Data do Orçamento (ex: DD/MM/AAAA)"
+                            value={dataOrcamento}
+                            onChangeText={setDataOrcamento}
+                            placeholderTextColor="#B0BEC5"
+                        />
+                        <Text style={styles.labelIntervalo}>Intervalo de Parcelas:</Text>
+                        <View style={styles.intervaloParcelasContainer}>
+                            <TextInput
+                                style={styles.inputIntervalo}
+                                placeholder="De (ex: 2)"
+                                keyboardType="numeric"
+                                value={parcelaInicialPdf}
+                                onChangeText={setParcelaInicialPdf}
+                                placeholderTextColor="#B0BEC5"
+                            />
+                            <Text style={styles.intervaloLabel}>até</Text>
+                            <TextInput
+                                style={styles.inputIntervalo}
+                                placeholder="Até (ex: 12)"
+                                keyboardType="numeric"
+                                value={parcelaFinalPdf}
+                                onChangeText={setParcelaFinalPdf}
+                                placeholderTextColor="#B0BEC5"
+                            />
+                        </View>
+                        <Pressable
+                            style={({ pressed }) => [
+                                styles.calcActionButton,
+                                styles.gerarPdfButton,
+                                pressed && styles.calcActionButtonPressed,
+                                loading && styles.calcActionButtonDisabled
+                            ]}
+                            onPress={gerarPdfECompartilhar}
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <ActivityIndicator color="#ECEFF1" size="small" />
+                            ) : (
+                                <Text style={styles.calcActionButtonText}>Compartilhar via WhatsApp</Text>
+                            )}
+                        </Pressable>
                     </View>
-                    <Pressable
-                        style={({ pressed }) => [
-                            styles.calcActionButton,
-                            styles.gerarPdfButton,
-                            pressed && styles.calcActionButtonPressed,
-                            loading && styles.calcActionButtonDisabled
-                        ]}
-                        onPress={gerarPdfECompartilhar}
-                        disabled={loading}
-                    >
-                        {loading ? (
-                            <ActivityIndicator color="#ECEFF1" size="small" />
-                        ) : (
-                            <Text style={styles.calcActionButtonText}>Compartilhar via WhatsApp</Text>
-                        )}
-                    </Pressable>
-                </View>
 
-                <Text style={styles.copyrightText}>© 2025 SabidoPay Calculadora. Todos os direitos reservados.</Text>
+                    <Text style={styles.copyrightText}>© 2025 SabidoPay Calculadora. Todos os direitos reservados.</Text>
                 </View>
             </ScrollView>
         </KeyboardAvoidingView>
@@ -998,42 +998,42 @@ const styles = StyleSheet.create({
     calcActionButton: { flex: 1, paddingVertical: 16, borderRadius: 8, alignItems: 'center', justifyContent: 'center', elevation: 3 },
     calcActionButtonText: { fontSize: 17, fontWeight: 'bold', color: '#ECEFF1' },
     calcularButtonColor: { backgroundColor: '#004D40' },
-    orcamentoContainer: { 
-        marginTop: 30, 
-        padding: 20, 
-        backgroundColor: '#37474F', 
-        borderRadius: 10, 
-        elevation: 4, 
-        shadowColor: '#000', 
-        shadowOffset: { width: 0, height: 2 }, 
-        shadowOpacity: 0.35, 
-        shadowRadius: 2.62, 
-        marginBottom: 20 
+    orcamentoContainer: {
+        marginTop: 30,
+        padding: 20,
+        backgroundColor: '#37474F',
+        borderRadius: 10,
+        elevation: 4,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.35,
+        shadowRadius: 2.62,
+        marginBottom: 20
     },
     orcamentoTitle: { fontSize: 19, fontWeight: 'bold', color: '#B0BEC5', marginBottom: 18, textAlign: 'center' },
     inputOrcamento: { backgroundColor: '#455A64', borderColor: '#546E7A', borderWidth: 1, borderRadius: 6, padding: 14, fontSize: 16, marginBottom: 14, color: '#ECEFF1' },
     labelIntervalo: { fontSize: 16, color: '#B0BEC5', marginTop: 8, marginBottom: 12 },
-    intervaloParcelasContainer: { 
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        justifyContent: 'space-between', 
+    intervaloParcelasContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
         marginBottom: 18,
         flexWrap: 'nowrap'
     },
-    inputIntervalo: { 
-        flex: 1, 
+    inputIntervalo: {
+        flex: 1,
         maxWidth: '42%',
-        backgroundColor: '#455A64', 
-        borderColor: '#546E7A', 
-        borderWidth: 1, 
-        borderRadius: 6, 
-        padding: 14, 
-        fontSize: 16, 
-        color: '#ECEFF1' 
+        backgroundColor: '#455A64',
+        borderColor: '#546E7A',
+        borderWidth: 1,
+        borderRadius: 6,
+        padding: 14,
+        fontSize: 16,
+        color: '#ECEFF1'
     },
-    intervaloLabel: { 
-        fontSize: 16, 
-        color: '#B0BEC5', 
+    intervaloLabel: {
+        fontSize: 16,
+        color: '#B0BEC5',
         marginHorizontal: 10,
         textAlign: 'center',
         width: 40
@@ -1044,8 +1044,8 @@ const styles = StyleSheet.create({
         transform: [{ scale: 0.98 }],
     },
     calcActionButtonPressed: {
-         opacity: 0.8,
-         transform: [{ scale: 0.99 }],
+        opacity: 0.8,
+        transform: [{ scale: 0.99 }],
     },
     calcActionButtonDisabled: {
         opacity: 0.4,
