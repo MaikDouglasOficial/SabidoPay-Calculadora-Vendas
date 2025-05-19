@@ -338,14 +338,16 @@ const JurosCalculatorScreen = () => {
             }
         }).join('');
 
-        const whatsappText = encodeURIComponent(`Orçamento de parcelamento no crediário\n(Sujeito à análise e aprovação de crédito)\n\nCliente: ${cliente || 'Não informado'}\nProduto: ${produtoServico || 'Não informado'}\nData: ${data || 'Não informada'}\nVendedor: ${vendedor || 'Não informado'}\n\nOpções de Parcelamento:\n${resultados.map(item => {
-            if (temEntrada) {
-                const numParcelas = parseInt(item.parcelas.replace('x', ''));
-                return `Entrada de ${item.entrada} | ${numParcelas}x de ${item.valor}`;
-            } else {
-                return `${item.parcelas} de ${item.valor}`;
-            }
-        }).join('\n')}\n\n_Gerado por SabidoPay Calculadora_`);
+        const whatsappText = encodeURIComponent(
+            `Orçamento de parcelamento no crediário (Sujeito à análise e aprovação de crédito)%0A%0ACliente: ${cliente || 'Não informado'}%0AProduto: ${produtoServico || 'Não informado'}%0AData: ${data || 'Não informada'}%0AVendedor: ${vendedor || 'Não informado'}%0A%0AOpções de Parcelamento:%0A` +
+            resultados.map(item => {
+                const parcelas = item.parcelas.replace('x', '');
+                return temEntrada
+                    ? `Entrada de ${item.entrada} | ${parcelas}x de ${item.valor}`
+                    : `${item.parcelas} de ${item.valor}`;
+            }).join('%0A') +
+            `%0A%0A_Gerado por SabidoPay Calculadora_`
+        );
         
         return `
             <!DOCTYPE html>
