@@ -46,18 +46,18 @@ const formatCurrencyRoundUp = (num: number): string => {
 };
 
 const parcelasData: { [key: string]: { jrdia: number; pmeta: number } } = {
-    '1+2X': { jrdia: 13, pmeta: 6.5 }, '1+3X': { jrdia: 17, pmeta: 8.5 },
-    '1+4X': { jrdia: 21, pmeta: 10.5 }, '1+5X': { jrdia: 25, pmeta: 12.5 },
-    '1+6X': { jrdia: 29, pmeta: 14.5 }, '1+7X': { jrdia: 33, pmeta: 16.5 },
-    '1+8X': { jrdia: 37, pmeta: 18.5 }, '1+9X': { jrdia: 41, pmeta: 20.5 },
-    '1+10X': { jrdia: 45, pmeta: 22.5 }, '1+11X': { jrdia: 49, pmeta: 24.5 },
-    '1+12X': { jrdia: 53, pmeta: 26.5 }, '1+13X': { jrdia: 57, pmeta: 28.5 },
-    '1+14X': { jrdia: 61, pmeta: 30.5 }, '1+15X': { jrdia: 65, pmeta: 32.5 },
-    '1+16X': { jrdia: 69, pmeta: 34.5 }, '1+17X': { jrdia: 73, pmeta: 36.5 },
-    '1+18X': { jrdia: 77, pmeta: 38.5 }, '1+19X': { jrdia: 81, pmeta: 40.5 },
-    '1+20X': { jrdia: 85, pmeta: 42.5 }, '1+21X': { jrdia: 89, pmeta: 44.5 },
-    '1+22X': { jrdia: 93, pmeta: 46.5 }, '1+23X': { jrdia: 97, pmeta: 48.5 },
-    '1+24X': { jrdia: 101, pmeta: 50.5 },
+    '1+2X': { jrdia: 13, pmeta: 7.0 }, '1+3X': { jrdia: 17, pmeta: 9.0 },
+    '1+4X': { jrdia: 21, pmeta: 11.0 }, '1+5X': { jrdia: 25, pmeta: 13.0 },
+    '1+6X': { jrdia: 29, pmeta: 15.0 }, '1+7X': { jrdia: 33, pmeta: 17.0 },
+    '1+8X': { jrdia: 37, pmeta: 19.0 }, '1+9X': { jrdia: 41, pmeta: 21.0 },
+    '1+10X': { jrdia: 45, pmeta: 23.0 }, '1+11X': { jrdia: 49, pmeta: 25.0 },
+    '1+12X': { jrdia: 53, pmeta: 27.0 }, '1+13X': { jrdia: 57, pmeta: 29.0 },
+    '1+14X': { jrdia: 61, pmeta: 31.0 }, '1+15X': { jrdia: 65, pmeta: 33.0 },
+    '1+16X': { jrdia: 69, pmeta: 35.0 }, '1+17X': { jrdia: 73, pmeta: 37.0 },
+    '1+18X': { jrdia: 77, pmeta: 39.0 }, '1+19X': { jrdia: 81, pmeta: 41.0 },
+    '1+20X': { jrdia: 85, pmeta: 43.0 }, '1+21X': { jrdia: 89, pmeta: 45.0 },
+    '1+22X': { jrdia: 93, pmeta: 47.0 }, '1+23X': { jrdia: 97, pmeta: 49.0 },
+    '1+24X': { jrdia: 101, pmeta: 51.0 },
 };
 
 type TabelaType = 'c' | 'm';
