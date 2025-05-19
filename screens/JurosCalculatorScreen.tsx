@@ -682,7 +682,7 @@ const JurosCalculatorScreen = () => {
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
             <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
                 <View style={styles.calculatorContainer}>
-                    <Text style={styles.calculatorTitle}>SabidoPay Calculadora</Text>
+                    
                     <View style={styles.calculatorDisplayContainer}>
                         <Text style={styles.calculatorPreviousValue}>
                             {calcPreviousValue !== null && calcOperator !== null ? `${calcPreviousValue.replace('.', ',')} ${calcOperator}` : ''}
