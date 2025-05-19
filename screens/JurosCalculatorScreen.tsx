@@ -293,6 +293,27 @@ const JurosCalculatorScreen = () => {
         }, 300);
     };
 
+    // Função centralizada para gerar o texto do WhatsApp
+    const gerarTextoWhatsApp = (
+        cliente: string,
+        produtoServico: string,
+        data: string,
+        vendedor: string,
+        resultados: ResultadoParcela[],
+        temEntrada: boolean
+    ): string => {
+        return encodeURIComponent(
+            `Simulação de parcelamento no crediário (sujeita à análise)\n\nCliente: ${cliente || 'Não informado'}\nProduto: ${produtoServico || 'Não informado'}\nData: ${data || 'Não informada'}\nVendedor: ${vendedor || 'Não informado'}\n\nOpções de Parcelamento:\n` +
+            resultados.map(item => {
+                const parcelas = item.parcelas.replace('x', '');
+                return temEntrada
+                    ? `Entrada de ${item.entrada} | ${parcelas}x de ${item.valor}`
+                    : `${parcelas}x de ${item.valor}`;
+            }).join('\n') +
+            `\n\nGerado por SabidoPay Calculadora`
+        );
+    };
+
     const gerarHtmlOrcamento = (
         cliente: string,
         produtoServico: string,
@@ -338,17 +359,8 @@ const JurosCalculatorScreen = () => {
             }
         }).join('');
 
-        const whatsappText = encodeURIComponent(
-            `Orçamento de parcelamento no crediário (Sujeito à análise e aprovação de crédito)%0A%0ACliente: ${cliente || 'Não informado'}%0AProduto: ${produtoServico || 'Não informado'}%0AData: ${data || 'Não informada'}%0AVendedor: ${vendedor || 'Não informado'}%0A%0AOpções de Parcelamento:%0A` +
-            resultados.map(item => {
-                const parcelas = item.parcelas.replace('x', '');
-                return temEntrada
-                    ? `Entrada de ${item.entrada} | ${parcelas}x de ${item.valor}`
-                    : `${item.parcelas} de ${item.valor}`;
-            }).join('%0A') +
-            `%0A%0A_Gerado por SabidoPay Calculadora_`
-        );
-        
+        const whatsappText = gerarTextoWhatsApp(cliente, produtoServico, data, vendedor, resultados, temEntrada);
+
         return `
             <!DOCTYPE html>
             <html>
@@ -502,7 +514,7 @@ const JurosCalculatorScreen = () => {
             </head>
             <body>
                 <div class="container">
-                    <h1>Simulação de Parcelamento</h1>
+                    <h1>Simulação de parcelamento no crediário (sujeita à análise)</h1>
                     <div class="info">
                         <p><strong>Cliente:</strong> ${cliente || 'Não informado'}</p>
                         <p><strong>Produto:</strong> ${produtoServico || 'Não informado'}</p>
@@ -569,14 +581,14 @@ const JurosCalculatorScreen = () => {
     };
 
     const compartilharViaWhatsApp = (resultados: ResultadoParcela[]) => {
-        const whatsappText = encodeURIComponent(`Orçamento para: ${nomeCliente || 'Não informado'}\nProduto: ${nomeProdutoServico || 'Não informado'}\nData: ${dataOrcamento || 'Não informada'}\nVendedor: ${nomeVendedor || 'Não informado'}\n\nOpções de Parcelamento:\n${resultados.map(item => {
-            if (temEntrada) {
-                const numParcelas = parseInt(item.parcelas.replace('x', ''));
-                return `Entrada de ${item.entrada} | ${numParcelas}x de ${item.valor}`;
-            } else {
-                return `${item.parcelas} de ${item.valor}`;
-            }
-        }).join('\n')}\n\n_Gerado por SabidoPay Calculadora_`);
+        const whatsappText = gerarTextoWhatsApp(
+            nomeCliente,
+            nomeProdutoServico,
+            dataOrcamento,
+            nomeVendedor,
+            resultados,
+            temEntrada
+        );
         
         const whatsappUrl = `https://wa.me/?text=${whatsappText}`;
         
@@ -670,7 +682,7 @@ const JurosCalculatorScreen = () => {
         <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
             <ScrollView style={styles.container} keyboardShouldPersistTaps="handled">
                 <View style={styles.calculatorContainer}>
-                     
+                    <Text style={styles.calculatorTitle}>SabidoPay Calculadora</Text>
                     <View style={styles.calculatorDisplayContainer}>
                         <Text style={styles.calculatorPreviousValue}>
                             {calcPreviousValue !== null && calcOperator !== null ? `${calcPreviousValue.replace('.', ',')} ${calcOperator}` : ''}
